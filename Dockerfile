@@ -4,7 +4,16 @@ ARG DMD_VERSION=2.113.1
 
 # install.sh verifies every download against the D keyring with gpg,
 # but silently skips verification if gpg is missing, so gpg is required here.
-RUN apt-get update && \
+#
+# dmd only uses gcc as a linker driver, so skip the C compiler proper
+# (cc1), the LTO compiler and the sanitizer runtimes.
+RUN printf '%s\n' \
+        'path-exclude=/usr/libexec/gcc/*/cc1' \
+        'path-exclude=/usr/libexec/gcc/*/lto1' \
+        'path-exclude=/usr/lib/x86_64-linux-gnu/lib*san.so*' \
+        'path-exclude=/usr/lib/gcc/*/lib*san*' \
+        > /etc/dpkg/dpkg.cfg.d/exclude-unused-gcc && \
+    apt-get update && \
     apt-get install --yes --no-install-recommends \
         ca-certificates curl gcc gpg jq libc6-dev xz-utils && \
     curl -fsSL https://dlang.org/install.sh -o /tmp/install.sh && \
