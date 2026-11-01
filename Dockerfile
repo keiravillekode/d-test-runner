@@ -12,7 +12,10 @@ RUN apt-get update && \
     rm /tmp/install.sh && \
     printf '#!/bin/sh\nexec /opt/dlang/dmd-%s/linux/bin64/dmd "$@"\n' "${DMD_VERSION}" > /usr/bin/dmd && \
     chmod +x /usr/bin/dmd && \
-    cp "/opt/dlang/dmd-${DMD_VERSION}/linux/bin64/dub" /usr/bin/dub && \
+    mv "/opt/dlang/dmd-${DMD_VERSION}/linux/bin64/dub" /usr/bin/dub && \
+    cd "/opt/dlang/dmd-${DMD_VERSION}" && \
+    rm -rf html man src/dmd linux/bin32 linux/lib32 && \
+    cd / && \
     apt-get purge --yes --auto-remove ca-certificates curl gpg xz-utils && \
     rm -rf /root/.gnupg && \
     apt-get clean && \
